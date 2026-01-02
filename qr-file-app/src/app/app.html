@@ -1,0 +1,58 @@
+
+<main class="main">
+  <mat-card class="upload-card">
+    <mat-card-header>
+      <mat-card-title>File to QR Code Generator</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Upload Zone -->
+      <div class="upload-zone" (dragover)="onDragOver($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
+        <input type="file" #fileInput (change)="onFileSelected($event)" accept="*/*" hidden>
+        <mat-icon>cloud_upload</mat-icon>
+        <p>Drag & drop or click to select file</p>
+        <small>Upload any file to get QR code</small>
+      </div>
+
+      <!-- File Preview -->
+      @if (selectedFile(); as file) {
+      <div class="preview-section">
+        <div class="file-preview">
+          @if (file.type.startsWith('image/')) {
+          <img [src]="fileUrl()" alt="{{file.name}}" class="preview-img"  style="width: 75%;">
+          } @else {
+          <div class="file-icon">
+            <mat-icon>insert_drive_file</mat-icon>
+            <p>{{file.name}}</p>
+          </div>
+          }
+          <p>File: {{file.name}} ({{formatFileSize(file.size)}})</p>
+          <button mat-raised-button color="primary" (click)="uploadFile()">
+            Upload to API
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Progress -->
+      @if (uploading()) {
+      <mat-progress-spinner diameter="50"></mat-progress-spinner>
+      }
+
+      <!-- QR Code Section -->
+      <div class="qr-section" [hidden]="!qrUrl()">
+        <mat-card class="qr-card">
+          <h3>Scan this QR Code</h3>
+          <p>File URL: <a [href]="qrUrl()" target="_blank">{{qrUrl()}}</a></p>
+          <canvas #qrCanvas class="qr-canvas" width="200" height="200"></canvas>
+          <button mat-raised-button color="accent" (click)="downloadQR()">
+             <mat-icon>download</mat-icon> Download QR Code
+          </button>
+        </mat-card>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+</main>
+
+<router-outlet />
